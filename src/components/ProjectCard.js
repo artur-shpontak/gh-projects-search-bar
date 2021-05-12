@@ -18,8 +18,8 @@ export const ProjectCard = ({
       <ListItem.Content>
         <ListItem.Title>{full_name}</ListItem.Title>
         <ListItem.Subtitle>Rating: {stargazers_count}</ListItem.Subtitle>
-        <ListItem.Subtitle>{description ?? 'There is no description'}</ListItem.Subtitle>
-        <ListItem.Subtitle>Language: {language ?? 'not specified'}</ListItem.Subtitle>
+        <ListItem.Subtitle>{description}</ListItem.Subtitle>
+        <ListItem.Subtitle>Language: {language}</ListItem.Subtitle>
         <ListItem.Subtitle
           style={{color: '#00aced'}}
           onPress={async() => {
@@ -53,5 +53,11 @@ export const ProjectCard = ({
     </ListItem>
   );
 };
+
+ProjectCard.defaultProps = {
+  description: 'There is no description',
+  language: 'not specified',
+  stargazers_count: 0,
+}
 
 ProjectCard.propTypes = ProjectCardType;
