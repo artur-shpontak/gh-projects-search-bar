@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator } from 'react-native';
 import { StyleSheet, Text, View } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { debounce } from "lodash";
 import { getDataFromServer } from '../api/projects';
+import { Platform } from 'react-native';
+import { SearchProjectsType } from '../../types';
 
 export const SearchProjects = ({ setProjects }) => {
   const [search, setSearch] = useState('');
@@ -29,9 +30,8 @@ export const SearchProjects = ({ setProjects }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>GitHub projects search</Text>
-      <StatusBar style="auto" />
       <SearchBar
-        platform="android"
+        platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         placeholder="Type here..."
         value={search}
         onChangeText={inputHandler}
@@ -48,7 +48,6 @@ export const SearchProjects = ({ setProjects }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 40,
     width: '100%',
   },
   text: {
@@ -58,3 +57,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+SearchProjects.propTypes = SearchProjectsType;

@@ -1,28 +1,48 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaView } from 'react-native';
+import { StatusBar } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
+import { ProjectCard } from './src/components/ProjectCard';
 import { SearchProjects } from './src/components/SearchProjects';
 
 export default function App() {
   const [projects, setProjects] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [favoriteProjects, setFavoriteProjects] = useState([]);
+
+  const renderProjectCard = (project) => (
+    <ProjectCard
+      initialProject={project.item}
+      setFavoriteProjects={setFavoriteProjects}
+      isAlreadyFavorite={favoriteProjects.some(favoriteProject => favoriteProject.id === project.item.id)}
+    />
+  );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <SearchProjects setProjects={setProjects} />
+
       {projects.length > 0
         && (
-          <Text style={styles.text}>{`Projects found: ${projects.length}`}</Text>
+          <FlatList
+            data={projects}
+            renderItem={renderProjectCard}
+            keyExtractor={project => project.id.toString()}
+          />
         )
       }
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#008b8b',
-    alignItems: 'center',
+    // alignItems: 'center',
     justifyContent: 'flex-start',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    backgroundColor: '#00aced',
   },
   text: {
     color: '#fff',
