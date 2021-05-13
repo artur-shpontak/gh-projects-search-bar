@@ -1,6 +1,6 @@
 const BASE_URL = 'https://api.github.com/search/repositories?q=';
 
-export async function getDataFromServer(keyword) {
+export async function getProjectsFromServer(keyword) {
   try {
     if (!keyword) {
       return [];

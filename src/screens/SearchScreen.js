@@ -1,26 +1,59 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+
 import { ProjectCard } from '../components/ProjectCard';
 import { SearchProjects } from '../components/SearchProjects';
-import { StatusBar } from 'react-native';
-import { Platform } from 'react-native';
-import { SafeAreaView } from 'react-native';
 
-export const SearchScreen = () => {
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const SearchScreen = ({ navigation }) => {
   const [projects, setProjects] = useState([]);
-  // const [favoriteProjects, setFavoriteProjects] = useState(SyncStorage.get('favorites') ?? []);
   const [favoriteProjects, setFavoriteProjects] = useState([]);
-  const [visibleProjects, setVisibleProjects] = useState([]);
 
-  // useEffect(() => {
-  //   SyncStorage.set('favorites', [...favoriteProjects]);
-  // }, [favoriteProjects]);
+  const saveFavorites = async() => {
+    try {
+      await AsyncStorage.setItem('favorites', JSON.stringify(favoriteProjects));
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  const loadFavorites = async() => {
+    try {
+      const favorites = await AsyncStorage.getItem('favorites');
+
+      if (favorites !== null) {
+        setFavoriteProjects(JSON.parse(favorites));
+      }
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  const isAlreadyFavorite = useCallback((project) => {
+    return favoriteProjects
+      .some(favoriteProject => favoriteProject.id === project.id);
+  }, [favoriteProjects]);
+
+  useEffect(() => {
+    saveFavorites();
+  }, [favoriteProjects]);
+
+  useEffect(() => {
+    loadFavorites();
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadFavorites();
+    });
+
+    return unsubscribe;
+  }, []);
 
   const renderProjectCard = useCallback((project) => (
     <ProjectCard
       initialProject={project.item}
       setFavoriteProjects={setFavoriteProjects}
-      isAlreadyFavorite={favoriteProjects.some(favoriteProject => favoriteProject.id === project.item.id)}
+      isAlreadyFavorite={isAlreadyFavorite(project.item)}
     />
   ), []);
 

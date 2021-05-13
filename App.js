@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon } from 'react-native-elements';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { SearchScreen } from './src/screens/SearchScreen';
 import { FavoritesScreen } from './src/screens/FavoritesScreen';
 
@@ -19,6 +20,7 @@ export default function App() {
               <Icon name="search" color={focused ? '#00aced' : '#748c94'} />
             )
           }}
+        
         />
         <Tab.Screen
           name="Favorites"

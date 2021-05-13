@@ -1,23 +1,44 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import { ProjectCard } from '../components/ProjectCard';
-import { StatusBar } from 'react-native';
-import { Platform } from 'react-native';
-import { SafeAreaView } from 'react-native';
 
-export const FavoritesScreen = () => {
-  // const [favoriteProjects, setFavoriteProjects] = useState(SyncStorage.get('favorites') ?? []);
+export const FavoritesScreen = ({ navigation }) => {
   const [favoriteProjects, setFavoriteProjects] = useState([]);
 
-  // useEffect(() => {
-  //   SyncStorage.set('favorites', [...favoriteProjects]);
-  // }, [favoriteProjects]);
+  const loadFavorites = async() => {
+    try {
+      const favorites = await AsyncStorage.getItem('favorites');
+
+      if (favorites !== null) {
+        setFavoriteProjects(JSON.parse(favorites));
+      }
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  useEffect(() => {
+    loadFavorites();
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadFavorites();
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const isAlreadyFavorite = useCallback((project) => {
+    return favoriteProjects
+      .some(favoriteProject => favoriteProject.id === project.id);
+  }, [favoriteProjects]);
 
   const renderProjectCard = useCallback((project) => (
     <ProjectCard
       initialProject={project.item}
       setFavoriteProjects={setFavoriteProjects}
-      isAlreadyFavorite={favoriteProjects.some(favoriteProject => favoriteProject.id === project.item.id)}
+      isAlreadyFavorite={isAlreadyFavorite(project)}
+      isFavorites
     />
   ), []);
 
@@ -26,7 +47,7 @@ export const FavoritesScreen = () => {
       {favoriteProjects.length > 0
         && (
           <FlatList
-            data={projects}
+            data={favoriteProjects}
             renderItem={renderProjectCard}
             keyExtractor={project => project.id.toString()}
           />

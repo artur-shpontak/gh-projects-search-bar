@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import { debounce } from "lodash";
-import { getDataFromServer } from '../api/projects';
-import { Platform } from 'react-native';
+
+import { getProjectsFromServer } from '../api/projects';
 import { SearchProjectsType } from '../../types';
 
 export const SearchProjects = ({ setProjects }) => {
@@ -12,7 +11,7 @@ export const SearchProjects = ({ setProjects }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const debouncedHandler = useCallback(debounce((keyword) => {
-    getDataFromServer(keyword)
+    getProjectsFromServer(keyword)
       .then(newProjects => setProjects(newProjects));
 
     setIsLoading(false);

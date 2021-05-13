@@ -1,16 +1,29 @@
 import React, { useCallback, useState } from 'react';
-import { Linking } from 'react-native';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { ListItem, Avatar, Icon } from 'react-native-elements';
 import { ProjectCardType } from '../../types';
 
 export const ProjectCard = ({
   initialProject,
   setFavoriteProjects,
-  isAlreadyFavorite
+  isAlreadyFavorite,
+  isFavorites = false
 }) => {
   const [isFavorite, setIsFavorite] = useState(isAlreadyFavorite);
   const { owner, full_name, stargazers_count, description, html_url, language } = initialProject;
+
+  const handlePressIcon = useCallback(() => {
+    setIsFavorite(!isFavorite);
+
+    if (!isFavorite && !isFavorites) {
+      setFavoriteProjects(prevProjects => [...prevProjects, initialProject]);
+
+      return;
+    }
+
+    setFavoriteProjects(prevProjects => prevProjects
+      .filter((project) => project.id !== initialProject.id));
+  }, [isFavorite])
 
   return (
     <ListItem>
@@ -39,20 +52,12 @@ export const ProjectCard = ({
       </ListItem.Content>
       <Icon
         reverse
-        name={isFavorite ? 'favorite' : 'favorite-border'}
+        name={(isFavorite && 'favorite')
+          || (isFavorites && 'delete')
+          || 'favorite-border'
+        }
         color='#00aced'
-        onPress={() => {
-          setIsFavorite(!isFavorite);
-
-          if (!isFavorite) {
-            setFavoriteProjects(prevProjects => [...prevProjects, initialProject]);
-          } else {
-            setFavoriteProjects(prevProjects => prevProjects
-              .filter((project) => project.id !== initialProject.id));
-          }
-
-          return;
-        }}
+        onPress={handlePressIcon}
       />
     </ListItem>
   );
@@ -63,6 +68,7 @@ ProjectCard.defaultProps = {
   language: 'not specified',
   stargazers_count: 0,
   isAlreadyFavorite: false,
+  isFavorites: false
 }
 
 ProjectCard.propTypes = ProjectCardType;
