@@ -17,5 +17,5 @@ export const ProjectCardType = {
     id: PropTypes.number.isRequired
   }).isRequired,
   setFavoriteProjects: PropTypes.func.isRequired,
-  isAlreadyFavorite: PropTypes.bool.isRequired,
+  isAlreadyFavorite: PropTypes.bool,
 }

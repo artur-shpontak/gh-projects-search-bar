@@ -10,7 +10,7 @@ export const ProjectCard = ({
   isAlreadyFavorite
 }) => {
   const [isFavorite, setIsFavorite] = useState(isAlreadyFavorite);
-  const { owner, full_name, stargazers_count, description, html_url, language, id } = initialProject;
+  const { owner, full_name, stargazers_count, description, html_url, language } = initialProject;
 
   return (
     <ListItem>
@@ -37,19 +37,23 @@ export const ProjectCard = ({
           Link
         </ListItem.Subtitle>
       </ListItem.Content>
-      {!isFavorite
-        && (
-          <Icon
-            reverse
-            name='favorite'
-            color='#00aced'
-            onPress={() => {
-              setIsFavorite(true);
-              setFavoriteProjects(prevProjects => [...prevProjects, initialProject]);
-            }}
-          />
-        )
-      }
+      <Icon
+        reverse
+        name={isFavorite ? 'favorite' : 'favorite-border'}
+        color='#00aced'
+        onPress={() => {
+          setIsFavorite(!isFavorite);
+
+          if (!isFavorite) {
+            setFavoriteProjects(prevProjects => [...prevProjects, initialProject]);
+          } else {
+            setFavoriteProjects(prevProjects => prevProjects
+              .filter((project) => project.id !== initialProject.id));
+          }
+
+          return;
+        }}
+      />
     </ListItem>
   );
 };
@@ -58,6 +62,7 @@ ProjectCard.defaultProps = {
   description: 'There is no description',
   language: 'not specified',
   stargazers_count: 0,
+  isAlreadyFavorite: false,
 }
 
 ProjectCard.propTypes = ProjectCardType;
